@@ -296,6 +296,7 @@ function req(c){
 }
 const totalCred=MALLA.reduce((a,m)=>a+m.creditos,0);
 const totalRel=MALLA.reduce((a,m)=>a+(m.prereq?m.prereq.split(",").filter(Boolean).length:0),0);
+const pal={1:"#dbeafe",2:"#ddf3e0",3:"#fef3cd",4:"#fce4ec",5:"#e8dff5",6:"#fff0d9",7:"#d6f0fa",8:"#f0e6ff"};
 
 // ── GLOBAL STATE (A y C compartidos) ──
 let A=[]; let C=[];
@@ -458,21 +459,21 @@ function renderVenn(){
 function renderGraph(){
   const host=document.getElementById("graph");
   if(!host||host.offsetWidth===0)return;host.innerHTML="";
-  const w=host.clientWidth,h=400;
+  const w=host.clientWidth,h=600;
   const svg=d3.select(host).append("svg").attr("width",w).attr("height",h);
+  const g=svg.append("g");
   svg.append("defs").append("marker").attr("id","ag").attr("viewBox","0 0 10 10").attr("refX",18).attr("refY",5)
     .attr("markerWidth",7).attr("markerHeight",7).attr("orient","auto")
     .append("path").attr("d","M0,0 L10,5 L0,10 Z").attr("fill","#6b7585");
   const nds=MALLA.map(m=>({id:m.codigo,nom:m.asignatura,niv:m.nivel,cred:m.creditos}));
   const lks=[];MALLA.forEach(m=>{const p=m.prereq.split(",").filter(Boolean);p.forEach(r=>lks.push({source:r,target:m.codigo}));});
-  const pal={1:"#dbeafe",2:"#ddf3e0",3:"#fef3cd",4:"#fce4ec",5:"#e8dff5",6:"#fff0d9",7:"#d6f0fa",8:"#f0e6ff"};
   const sim=d3.forceSimulation(nds)
-    .force("link",d3.forceLink(lks).id(d=>d.id).distance(120))
-    .force("charge",d3.forceManyBody().strength(-300))
+    .force("link",d3.forceLink(lks).id(d=>d.id).distance(150))
+    .force("charge",d3.forceManyBody().strength(-400))
     .force("center",d3.forceCenter(w/2,h/2))
-    .force("collision",d3.forceCollide(30));
-  svg.append("g").selectAll("line").data(lks).join("line").attr("class","arr").attr("marker-end","url(#ag)");
-  const grp=svg.append("g").selectAll("g").data(nds).join("g")
+    .force("collision",d3.forceCollide(35));
+  g.append("g").selectAll("line").data(lks).join("line").attr("class","arr").attr("marker-end","url(#ag)");
+  const grp=g.append("g").selectAll("g").data(nds).join("g")
     .call(d3.drag().on("start",(e,d)=>{if(!e.active)sim.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y;})
       .on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y;}).on("end",(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;}));
   grp.append("circle").attr("r",20)
@@ -485,24 +486,67 @@ function renderGraph(){
       if(A.includes(d.id))return "#2563eb";
       if(C.includes(d.id))return "#d97706";
       return "#192f4d";
-    }).attr("stroke-width",2)
-    .on("click",(_,d)=>{
-      const pre=req(d.id).map(x=>NOM[x]||x).join(", ")||"(ninguno)";
-      const des=MALLA.filter(m=>req(m.codigo).includes(d.id));
-      document.getElementById("graph-detail").innerHTML=
-        `<strong>${d.id} — ${d.nom}</strong><br>Créditos: ${d.cred} | Nivel: ${d.niv}<br>`+
-        `<strong>Prerreq:</strong> ${pre}<br><strong>Habilita:</strong> ${des.length?des.map(x=>x.asignatura).join(", "):"(ninguna)"}`+
-        `<br><strong>Estado:</strong> ${A.includes(d.id)?"Aprobada":C.includes(d.id)?"Cursando":"—"}`;
-    });
+    }).attr("stroke-width",2);
   grp.append("text").attr("text-anchor","middle").attr("font-size",9).attr("dy",3).text(d=>d.id);
   sim.on("tick",()=>{
-    svg.select("g").selectAll("line").attr("x1",d=>d.source.x).attr("y1",d=>d.source.y).attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
+    g.select("g").selectAll("line").attr("x1",d=>d.source.x).attr("y1",d=>d.source.y).attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
     grp.attr("transform",d=>`translate(${d.x},${d.y})`);
   });
+  grp.on("click",(e,d)=>{
+    e.stopPropagation();
+    const inA=A.includes(d.id),inC=C.includes(d.id);
+    if(!inA&&!inC){
+      const pre=req(d.id);
+      if(pre.length&&pre.some(p=>!A.includes(p))){
+        toast("✗ No puedes aprobar \""+d.nom+"\" sin antes aprobar: "+pre.filter(p=>!A.includes(p)).map(x=>NOM[x]).join(", "));
+        return;
+      }
+      A.push(d.id);
+    }else if(inA&&!inC){
+      A=A.filter(x=>x!==d.id);C.push(d.id);
+      const afectadas=MALLA.filter(x=>A.includes(x.codigo)&&req(x.codigo).some(p=>p===d.id)).map(x=>x.codigo);
+      afectadas.forEach(c=>{A=A.filter(x=>x!==c);C.push(c);});
+      if(afectadas.length)toast("⚠️ "+afectadas.map(x=>NOM[x]).join(", ")+" se movieron a C (perdieron prerequisito)");
+    }else{
+      A=A.filter(x=>x!==d.id);C=C.filter(x=>x!==d.id);
+    }
+    renderCourseBoard();syncCardSelects();updateQuickPanel();renderVenn();
+    updateGraphColors(grp);
+    if(document.getElementById("tab-afd").classList.contains("active"))runDfa();
+  });
+  svg.on("click",()=>{
+    document.getElementById("graph-detail").innerHTML="<em>Haz clic en un nodo.</em>";
+  });
+  grp.on("dblclick",(e,d)=>{
+    e.stopPropagation();
+    const pre=req(d.id).map(x=>NOM[x]||x).join(", ")||"(ninguno)";
+    const des=MALLA.filter(m=>req(m.codigo).includes(d.id));
+    document.getElementById("graph-detail").innerHTML=
+      `<strong>${d.id} — ${d.nom}</strong><br>Créditos: ${d.cred} | Nivel: ${d.niv}<br>`+
+      `<strong>Prerreq:</strong> ${pre}<br><strong>Habilita:</strong> ${des.length?des.map(x=>x.asignatura).join(", "):"(ninguna)"}`+
+      `<br><strong>Estado:</strong> ${A.includes(d.id)?"Aprobada":C.includes(d.id)?"Cursando":"—"}`;
+  });
+  const zoom=d3.zoom().scaleExtent([.25,4]).on("zoom",e=>{g.attr("transform",e.transform);});
+  svg.call(zoom).on("dblclick.zoom",null);
+  svg.append("rect").attr("width",w).attr("height",h).attr("fill","none").attr("pointer-events","all");
   document.getElementById("level-legend").innerHTML=
     `<span class="pill" style="background:#dbeafe;border:1px solid #93b5e8">Aprobada</span>`+
     `<span class="pill" style="background:#fef3cd;border:1px solid #e0b354">Cursando</span>`+
     Object.entries(pal).map(([k,v])=>`<span class="pill" style="background:${v};border:1px solid #bcc8df">N${k}</span>`).join("");
+}
+
+function updateGraphColors(grp){
+  grp.select("circle")
+    .attr("fill",d=>{
+      if(A.includes(d.id))return "#dbeafe";
+      if(C.includes(d.id))return "#fef3cd";
+      return pal[d.niv]||"#e2e8f0";
+    })
+    .attr("stroke",d=>{
+      if(A.includes(d.id))return "#2563eb";
+      if(C.includes(d.id))return "#d97706";
+      return "#192f4d";
+    });
 }
 
 // ── DFA ──
