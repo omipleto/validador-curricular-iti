@@ -514,9 +514,6 @@ function renderGraph(){
     updateGraphColors(grp);
     if(document.getElementById("tab-afd").classList.contains("active"))runDfa();
   });
-  svg.on("click",()=>{
-    document.getElementById("graph-detail").innerHTML="<em>Haz clic en un nodo.</em>";
-  });
   grp.on("dblclick",(e,d)=>{
     e.stopPropagation();
     const pre=req(d.id).map(x=>NOM[x]||x).join(", ")||"(ninguno)";
@@ -527,8 +524,11 @@ function renderGraph(){
       `<br><strong>Estado:</strong> ${A.includes(d.id)?"Aprobada":C.includes(d.id)?"Cursando":"—"}`;
   });
   const zoom=d3.zoom().scaleExtent([.25,4]).on("zoom",e=>{g.attr("transform",e.transform);});
-  svg.call(zoom).on("dblclick.zoom",null);
-  svg.append("rect").attr("width",w).attr("height",h).attr("fill","none").attr("pointer-events","all");
+  const bg=svg.insert("rect",":first-child").attr("width",w).attr("height",h).attr("fill","transparent");
+  bg.call(zoom).on("dblclick.zoom",null);
+  bg.on("click",()=>{
+    document.getElementById("graph-detail").innerHTML="<em>Haz clic en un nodo.</em>";
+  });
   document.getElementById("level-legend").innerHTML=
     `<span class="pill" style="background:#dbeafe;border:1px solid #93b5e8">Aprobada</span>`+
     `<span class="pill" style="background:#fef3cd;border:1px solid #e0b354">Cursando</span>`+
