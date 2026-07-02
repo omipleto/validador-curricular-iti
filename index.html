@@ -462,7 +462,7 @@ function renderGraph(){
   const w=host.clientWidth,h=600;
   const svg=d3.select(host).append("svg").attr("width",w).attr("height",h);
   const g=svg.append("g");
-  svg.append("defs").append("marker").attr("id","ag").attr("viewBox","0 0 10 10").attr("refX",18).attr("refY",5)
+  svg.append("defs").append("marker").attr("id","ag").attr("viewBox","0 0 10 10").attr("refX",26).attr("refY",5)
     .attr("markerWidth",7).attr("markerHeight",7).attr("orient","auto")
     .append("path").attr("d","M0,0 L10,5 L0,10 Z").attr("fill","#6b7585");
   const nds=MALLA.map(m=>({id:m.codigo,nom:m.asignatura,niv:m.nivel,cred:m.creditos}));
@@ -471,12 +471,12 @@ function renderGraph(){
     .force("link",d3.forceLink(lks).id(d=>d.id).distance(150))
     .force("charge",d3.forceManyBody().strength(-400))
     .force("center",d3.forceCenter(w/2,h/2))
-    .force("collision",d3.forceCollide(35));
+    .force("collision",d3.forceCollide(42));
   g.append("g").selectAll("line").data(lks).join("line").attr("class","arr").attr("marker-end","url(#ag)");
   const grp=g.append("g").selectAll("g").data(nds).join("g")
     .call(d3.drag().on("start",(e,d)=>{if(!e.active)sim.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y;})
       .on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y;}).on("end",(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;}));
-  grp.append("circle").attr("r",20)
+  grp.append("circle").attr("r",28)
     .attr("fill",d=>{
       if(A.includes(d.id))return "#dbeafe";
       if(C.includes(d.id))return "#fef3cd";
