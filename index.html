@@ -289,7 +289,11 @@ MALLA.sort((a,b)=>a.nivel-b.nivel);
 const NOM=Object.fromEntries(MALLA.map(m=>[m.codigo,m.asignatura]));
 const CRED=Object.fromEntries(MALLA.map(m=>[m.codigo,m.creditos]));
 const NIV=Object.fromEntries(MALLA.map(m=>[m.codigo,m.nivel]));
-function req(c){const m=MALLA.find(x=>x.codigo===c);return m?m.prereq.split(",").filter(Boolean):[];}
+function req(c){
+  if(c==="ECIN-01000") return MALLA.filter(m=>m.codigo!==c).map(m=>m.codigo);
+  const m=MALLA.find(x=>x.codigo===c);
+  return m?m.prereq.split(",").filter(Boolean):[];
+}
 const totalCred=MALLA.reduce((a,m)=>a+m.creditos,0);
 const totalRel=MALLA.reduce((a,m)=>a+(m.prereq?m.prereq.split(",").filter(Boolean).length:0),0);
 
