@@ -285,6 +285,7 @@ const MALLA = [
 ];
 
 // ── HELPERS ──
+MALLA.sort((a,b)=>a.nivel-b.nivel);
 const NOM=Object.fromEntries(MALLA.map(m=>[m.codigo,m.asignatura]));
 const CRED=Object.fromEntries(MALLA.map(m=>[m.codigo,m.creditos]));
 const NIV=Object.fromEntries(MALLA.map(m=>[m.codigo,m.nivel]));
