@@ -343,9 +343,21 @@ function renderCourseBoard(){
     if(inA)card.innerHTML+=`<span class="badge badge-a">A</span>`;
     else if(inC)card.innerHTML+=`<span class="badge badge-c">C</span>`;
     card.onclick=()=>{
-      if(!inA&&!inC){A.push(m.codigo);}           // none → A
-      else if(inA&&!inC){A=A.filter(x=>x!==m.codigo);C.push(m.codigo);}  // A → C
-      else{A=A.filter(x=>x!==m.codigo);C=C.filter(x=>x!==m.codigo);}      // C → none
+      if(!inA&&!inC){
+        const pre=req(m.codigo);
+        if(pre.length&&pre.some(p=>!A.includes(p))){
+          toast("✗ No puedes aprobar \""+m.asignatura+"\" sin antes aprobar: "+pre.filter(p=>!A.includes(p)).map(x=>NOM[x]).join(", "));
+          return;
+        }
+        A.push(m.codigo);
+      }else if(inA&&!inC){
+        A=A.filter(x=>x!==m.codigo);C.push(m.codigo);
+        const afectadas=MALLA.filter(x=>A.includes(x.codigo)&&req(x.codigo).some(p=>p===m.codigo)).map(x=>x.codigo);
+        afectadas.forEach(c=>{A=A.filter(x=>x!==c);C.push(c);});
+        if(afectadas.length)toast("⚠️ "+afectadas.map(x=>NOM[x]).join(", ")+" se movieron a C (perdieron prerequisito)");
+      }else{
+        A=A.filter(x=>x!==m.codigo);C=C.filter(x=>x!==m.codigo);
+      }
       renderCourseBoard();syncCardSelects();updateQuickPanel();renderVenn();renderGraph();
       if(document.getElementById("tab-afd").classList.contains("active"))runDfa();
     };
