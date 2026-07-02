@@ -333,36 +333,43 @@ function renderStats(){
 // ── COURSE BOARD (Explorer tab) ──
 function renderCourseBoard(){
   const el=document.getElementById("course-board");el.innerHTML="";
-  for(const m of MALLA){
-    const card=document.createElement("div");
-    card.className="course-card";
-    const inA=A.includes(m.codigo),inC=C.includes(m.codigo);
-    if(inA)card.classList.add("state-a");
-    else if(inC)card.classList.add("state-c");
-    else card.classList.add("state-none");
-    card.innerHTML=`<div class="code">${m.codigo}</div><div class="name">${m.asignatura}</div><div class="cred">${m.creditos} cr. · N${m.nivel}</div>`;
-    if(inA)card.innerHTML+=`<span class="badge badge-a">A</span>`;
-    else if(inC)card.innerHTML+=`<span class="badge badge-c">C</span>`;
-    card.onclick=()=>{
-      if(!inA&&!inC){
-        const pre=req(m.codigo);
-        if(pre.length&&pre.some(p=>!A.includes(p))){
-          toast("✗ No puedes aprobar \""+m.asignatura+"\" sin antes aprobar: "+pre.filter(p=>!A.includes(p)).map(x=>NOM[x]).join(", "));
-          return;
+  const grupos=d3.group(MALLA,m=>m.nivel);
+  for(const [nivel,ms] of grupos){
+    const h=document.createElement("div");
+    h.style.cssText="grid-column:1/-1;font-weight:700;font-size:.9rem;color:var(--brand);margin:6px 0 2px;padding:4px 8px;border-radius:6px;background:#eef2f7";
+    h.textContent="Nivel "+nivel;
+    el.appendChild(h);
+    for(const m of ms){
+      const card=document.createElement("div");
+      card.className="course-card";
+      const inA=A.includes(m.codigo),inC=C.includes(m.codigo);
+      if(inA)card.classList.add("state-a");
+      else if(inC)card.classList.add("state-c");
+      else card.classList.add("state-none");
+      card.innerHTML=`<div class="code">${m.codigo}</div><div class="name">${m.asignatura}</div><div class="cred">${m.creditos} cr. · N${m.nivel}</div>`;
+      if(inA)card.innerHTML+=`<span class="badge badge-a">A</span>`;
+      else if(inC)card.innerHTML+=`<span class="badge badge-c">C</span>`;
+      card.onclick=()=>{
+        if(!inA&&!inC){
+          const pre=req(m.codigo);
+          if(pre.length&&pre.some(p=>!A.includes(p))){
+            toast("✗ No puedes aprobar \""+m.asignatura+"\" sin antes aprobar: "+pre.filter(p=>!A.includes(p)).map(x=>NOM[x]).join(", "));
+            return;
+          }
+          A.push(m.codigo);
+        }else if(inA&&!inC){
+          A=A.filter(x=>x!==m.codigo);C.push(m.codigo);
+          const afectadas=MALLA.filter(x=>A.includes(x.codigo)&&req(x.codigo).some(p=>p===m.codigo)).map(x=>x.codigo);
+          afectadas.forEach(c=>{A=A.filter(x=>x!==c);C.push(c);});
+          if(afectadas.length)toast("⚠️ "+afectadas.map(x=>NOM[x]).join(", ")+" se movieron a C (perdieron prerequisito)");
+        }else{
+          A=A.filter(x=>x!==m.codigo);C=C.filter(x=>x!==m.codigo);
         }
-        A.push(m.codigo);
-      }else if(inA&&!inC){
-        A=A.filter(x=>x!==m.codigo);C.push(m.codigo);
-        const afectadas=MALLA.filter(x=>A.includes(x.codigo)&&req(x.codigo).some(p=>p===m.codigo)).map(x=>x.codigo);
-        afectadas.forEach(c=>{A=A.filter(x=>x!==c);C.push(c);});
-        if(afectadas.length)toast("⚠️ "+afectadas.map(x=>NOM[x]).join(", ")+" se movieron a C (perdieron prerequisito)");
-      }else{
-        A=A.filter(x=>x!==m.codigo);C=C.filter(x=>x!==m.codigo);
-      }
-      renderCourseBoard();syncCardSelects();updateQuickPanel();renderVenn();renderGraph();
-      if(document.getElementById("tab-afd").classList.contains("active"))runDfa();
-    };
-    el.appendChild(card);
+        renderCourseBoard();syncCardSelects();updateQuickPanel();renderVenn();renderGraph();
+        if(document.getElementById("tab-afd").classList.contains("active"))runDfa();
+      };
+      el.appendChild(card);
+    }
   }
 }
 
