@@ -3,62 +3,95 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Validador Curricular ITI — Modelo Formal</title>
+<title>Validador Curricular ITI</title>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f4f2ed;--paper:#fffefb;--ink:#1a1f2b;--muted:#5d6677;--brand:#192f4d;--brand2:#24527a;--ok:#167e56;--warn:#9e5c00;--bad:#b31f14;--line:#d8d0c0;--shadow:0 6px 28px rgba(20,24,36,.1)}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,sans-serif;color:var(--ink);background:radial-gradient(ellipse at 10% 8%,#dce9f9 0%,transparent 40%),radial-gradient(ellipse at 92% 92%,#fce9d6 0%,transparent 35%),var(--bg);min-height:100vh}
-.shell{max-width:1320px;margin:0 auto;padding:18px}
-.hero{background:linear-gradient(135deg,#15304d 0%,#275a82 55%,#407ea8 100%);border-radius:18px;padding:22px 26px;color:#fff;box-shadow:var(--shadow);position:relative;overflow:hidden}
-.hero::after{content:"";position:absolute;right:-70px;bottom:-100px;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.1)}
-.hero h1{font-family:Fraunces,serif;font-size:clamp(1.3rem,2.5vw,2.2rem);letter-spacing:.2px}
-.hero p{color:rgba(255,255,255,.85);font-size:.92rem;margin-top:4px;max-width:950px}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-top:14px}
-.stat{padding:8px 12px;border:1px solid rgba(255,255,255,.18);border-radius:10px;background:rgba(255,255,255,.08)}
-.stat .n{font-size:1.25rem;font-weight:700}
-.stat .l{font-size:.78rem;opacity:.85}
-nav{margin-top:12px;display:flex;gap:6px;flex-wrap:wrap}
-nav button{border:1px solid var(--line);background:var(--paper);color:var(--brand);padding:8px 14px;border-radius:999px;font-weight:600;cursor:pointer;transition:.15s;font-size:.88rem}
-nav button:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(30,58,95,.12)}
+:root{--bg:#f4f2ed;--paper:#fffefb;--ink:#1a1f2b;--muted:#5d6677;--brand:#192f4d;--ok:#167e56;--bad:#b31f14;--warn:#9e5c00;--line:#d8d0c0}
+body{font-family:Inter,sans-serif;color:var(--ink);background:radial-gradient(ellipse at 10% 8%,#dce9f9,transparent 40%),radial-gradient(ellipse at 92% 92%,#fce9d6,transparent 35%),var(--bg)}
+.shell{max-width:1340px;margin:0 auto;padding:16px}
+.hero{background:linear-gradient(135deg,#15304d,#275a82 55%,#407ea8);border-radius:16px;padding:18px 22px;color:#fff;margin-bottom:10px}
+.hero h1{font-family:Fraunces,serif;font-size:clamp(1.2rem,2.2vw,2rem)}
+.hero p{color:rgba(255,255,255,.85);font-size:.88rem;margin-top:3px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-top:10px}
+.stat{padding:6px 10px;border:1px solid rgba(255,255,255,.18);border-radius:8px;background:rgba(255,255,255,.08)}
+.stat .n{font-weight:700}
+.stat .l{font-size:.74rem;opacity:.85}
+nav{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+nav button{border:1px solid var(--line);background:var(--paper);padding:7px 12px;border-radius:999px;font-weight:600;cursor:pointer;font-size:.85rem;color:var(--brand);transition:.15s}
+nav button:hover{box-shadow:0 4px 12px rgba(30,58,95,.1)}
 nav button.active{background:var(--brand);color:#fff;border-color:var(--brand)}
-.tab{display:none;margin-top:14px}
-.tab.active{display:block;animation:in .2s ease}
-@keyframes in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:16px;margin-bottom:12px}
-h2{font-family:Fraunces,serif;color:var(--brand);margin-bottom:8px;font-size:1.25rem}
-h3{color:var(--brand2);margin:8px 0;font-size:.98rem}
-.sub{color:var(--muted);font-size:.9rem;line-height:1.45;margin-bottom:8px}
-.grid{display:grid;gap:12px}
-.grid2{grid-template-columns:1fr 1fr}
-.grid3{grid-template-columns:repeat(3,1fr)}
-@media(max-width:980px){.grid2,.grid3{grid-template-columns:1fr}}
-.viz{width:100%;min-height:380px;border:1px dashed #c5bdae;border-radius:10px;background:linear-gradient(180deg,#fffcf7,#f8f5ef);overflow:hidden}
-.panel{border:1px solid var(--line);border-radius:8px;padding:10px;background:#fff;min-height:50px;font-size:.9rem}
-label{display:block;font-size:.82rem;color:#5d677a;margin-top:6px;font-weight:600}
-select,input{width:100%;margin-top:3px;border:1px solid #c5bdb0;border-radius:7px;padding:7px 9px;font-size:.9rem;background:#fff}
-.btn{margin-top:8px;border:none;border-radius:9px;padding:9px 14px;font-weight:700;cursor:pointer;color:#fff;background:linear-gradient(120deg,#192f4d,#24527a);width:100%;font-size:.9rem;transition:.15s}
+.tab{display:none;animation:fadeIn .2s}
+.tab.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 4px 20px rgba(20,24,36,.08)}
+h2{font-family:Fraunces,serif;color:var(--brand);margin-bottom:6px;font-size:1.15rem}
+h3{color:#24527a;margin:6px 0;font-size:.92rem}
+.sub{color:var(--muted);font-size:.85rem;line-height:1.4;margin-bottom:6px}
+.flex{display:flex;gap:10px;flex-wrap:wrap}
+.col{flex:1;min-width:280px}
+.col2{flex:2;min-width:380px}
+@media(max-width:800px){.col,.col2{min-width:100%}}
+.viz{width:100%;min-height:340px;border:1px dashed #c5bdae;border-radius:10px;background:linear-gradient(180deg,#fffcf7,#f8f5ef);overflow:hidden}
+.panel{border:1px solid var(--line);border-radius:8px;padding:10px;background:#fff;font-size:.85rem;min-height:40px}
+label{font-size:.8rem;color:#5d677a;font-weight:600}
+select,input{border:1px solid #c5bdb0;border-radius:7px;padding:6px 8px;font-size:.88rem;background:#fff}
+.btn{border:none;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer;color:#fff;background:linear-gradient(120deg,#192f4d,#24527a);font-size:.85rem;transition:.15s}
 .btn:hover{filter:brightness(1.12)}
-.result{margin-top:8px;padding:10px 14px;border-radius:9px;font-weight:700;text-align:center}
+.btn-sm{padding:5px 10px;font-size:.78rem;width:auto}
+.result{padding:10px 14px;border-radius:8px;font-weight:700;text-align:center;margin:6px 0}
 .ok{background:#e6f6ef;color:var(--ok);border:1px solid #99d4bb}
 .bad{background:#ffecea;color:var(--bad);border:1px solid #f0ada6}
 .wait{background:#fef6e7;color:var(--warn);border:1px solid #f0d49f}
-.pill{display:inline-block;border-radius:999px;padding:3px 10px;background:#e5edf7;color:var(--brand);font-size:.77rem;margin:2px}
-table{width:100%;border-collapse:collapse;font-size:.86rem}
-th,td{border:1px solid #d5ccbc;padding:6px;text-align:center}
+.pill{display:inline-block;border-radius:999px;padding:2px 9px;background:#e5edf7;color:var(--brand);font-size:.74rem;margin:2px;white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+td,th{border:1px solid #d5ccbc;padding:5px;text-align:center}
 th{background:#e4edf8;color:#192f4d}
+
+/* Course cards */
+.course-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px;max-height:420px;overflow-y:auto;padding:4px}
+.course-card{padding:7px 9px;border-radius:8px;border:2px solid #ddd6c8;cursor:pointer;transition:.12s;user-select:none;font-size:.82rem;line-height:1.3;position:relative}
+.course-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.course-card .code{font-weight:600;color:var(--brand);font-size:.78rem}
+.course-card .name{color:var(--ink)}
+.course-card .cred{color:var(--muted);font-size:.74rem}
+.course-card.state-none{background:#f5f3ef}
+.course-card.state-a{background:#dbeafe;border-color:#2563eb}
+.course-card.state-c{background:#fef3cd;border-color:#d97706}
+.course-card.state-both{background:#e8dff5;border-color:#7c3aed}
+.course-card.state-none:hover{background:#edebe4}
+.badge{display:inline-block;border-radius:4px;padding:1px 6px;font-size:.68rem;font-weight:600;margin-left:4px}
+.badge-a{background:#2563eb;color:#fff}
+.badge-c{background:#d97706;color:#fff}
+.badge-both{background:#7c3aed;color:#fff}
+
+.progress-bar{height:20px;background:#e5e7eb;border-radius:999px;overflow:hidden;position:relative;margin:6px 0}
+.progress-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#2563eb,#167e56);transition:width .3s}
+.progress-label{position:absolute;top:0;left:50%;transform:translateX(-50%);font-size:.72rem;font-weight:700;line-height:20px;color:#1f2937}
+
+/* Levels in graph */
 .nstate,.nstate-ok,.nstate-bad{cursor:pointer;transition:.2s}
 .nstate{fill:#dfe7f3;stroke:#192f4d;stroke-width:2}
-.nstate-ok{fill:#daf0e6;stroke:#167e56}
+.nstate-ok{fill:#dbeafe;stroke:#2563eb}
 .nstate-bad{fill:#fde2df;stroke:#b31f14}
-.nstate-current{stroke-width:4;stroke:#1f6bc4}
-.arr{stroke:#697382;stroke-width:1.6;fill:none}
-.venn-a{fill:#2e7ec9;fill-opacity:.45;stroke:#1f5fa3;stroke-width:2}
-.venn-c{fill:#d4691a;fill-opacity:.45;stroke:#a9500e;stroke-width:2}
-#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#181d28;color:#fff;padding:9px 16px;border-radius:9px;opacity:0;pointer-events:none;transition:.2s;z-index:99}
+.nstate-cur{stroke-width:4;stroke:#1f6bc4}
+.arr{stroke:#697382;stroke-width:1.5;fill:none}
+.venn-a{fill:#2563eb;fill-opacity:.4;stroke:#1d4ed8;stroke-width:2}
+.venn-c{fill:#d97706;fill-opacity:.4;stroke:#b45309;stroke-width:2}
+
+/* Validation detail per course */
+.vitem{padding:5px 8px;border-radius:6px;margin:3px 0;display:flex;justify-content:space-between;align-items:center;font-size:.82rem}
+.vitem.ok{background:#e6f6ef;border:1px solid #99d4bb}
+.vitem.fail{background:#ffecea;border:1px solid #f0ada6}
+
+/* DFA animation */
+.dfa-anim{transition:all .3s}
+.dfa-arrow-active{stroke:#1f6bc4!important;stroke-width:2.5!important}
+
+#toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:#181d28;color:#fff;padding:8px 14px;border-radius:8px;opacity:0;transition:.2s;z-index:99;font-size:.85rem;pointer-events:none}
 #toast.show{opacity:1}
 </style>
 </head>
@@ -66,133 +99,133 @@ th{background:#e4edf8;color:#192f4d}
 <div class="shell">
 <header class="hero">
 <h1>Validador Curricular ITI</h1>
-<p>Modelo matemático formal: conjuntos, relaciones, funciones, lógica proposicional y autómata finito determinista sobre la malla de Ingeniería en Tecnologías de Información.</p>
+<p>Simulación interactiva del motor de verificación formal — haz clic en cualquier materia para cambiar su estado (aprobada / cursando / ninguna). Todo se actualiza en tiempo real.</p>
 <div class="stats" id="kpi-stats"></div>
 </header>
 
 <nav id="tabs">
-<button class="active" data-tab="tab-modelo">Modelo</button>
-<button data-tab="tab-malla">Malla</button>
-<button data-tab="tab-afd">AFD</button>
+<button class="active" data-tab="tab-explorer">Explorador</button>
+<button data-tab="tab-afd">Autómata</button>
 <button data-tab="tab-conjuntos">Conjuntos</button>
-<button data-tab="tab-validador">Validador</button>
+<button data-tab="tab-malla">Malla</button>
 <button data-tab="tab-logica">Lógica</button>
 </nav>
 
-<section id="tab-modelo" class="tab active">
+<section id="tab-explorer" class="tab active">
 <div class="card">
-<h2>Resumen del Modelo Formal</h2>
-<p class="sub">El sistema transforma el reglamento curricular en un modelo ejecutable. Usa teoría de conjuntos para representar la arquitectura de la malla, relaciones binarias para la precedencia, funciones para consultas, lógica proposicional para validación y autómatas finitos para el reconocimiento de trayectorias válidas.</p>
-<div class="grid grid3">
-<div class="panel"><h3>Conjuntos</h3><p class="sub">U (universo), K (carreras), F (facultades), P<sub>k</sub> (malla ITI), S (estudiantes), A (aprobadas), C (cursando), hab(A) (habilitadas).</p></div>
-<div class="panel"><h3>Relaciones</h3><p class="sub">R1 (prerrequisito: irreflexiva, asimétrica, transitiva), Rv (inscripción válida), Rd (dependencia estructural), Rf (carrera→facultad), Rs (estudiante→carrera).</p></div>
-<div class="panel"><h3>Funciones</h3><p class="sub">req(m): P<sub>k</sub> → 𝒫(P<sub>k</sub>), pct(A): 𝒫(P<sub>k</sub>) → ℝ, hab(A): 𝒫(P<sub>k</sub>) → 𝒫(P<sub>k</sub>), val(C): 𝒫(P<sub>k</sub>) → {V,F}.</p></div>
+<div class="flex">
+<div class="col2">
+<h2>Panel del Estudiante</h2>
+<p class="sub">Haz clic en las materias para marcarlas como <strong>Aprobadas (A)</strong> o <strong>Cursando (C)</strong>. La validación se dispara en tiempo real.</p>
+<label>Click: 1° vez → A (aprobada) · 2° vez → A+C (aprobada y cursando) · 3° vez → quitar</label>
+<div id="course-board" class="course-grid"></div>
+</div>
+<div class="col">
+<h2>Vista Rápida</h2>
+<div id="quick-progress" style="margin-bottom:6px">
+<div class="progress-bar" id="quick-progress-bar"><div class="progress-fill" id="quick-progress-fill" style="width:0%"></div><span class="progress-label" id="quick-progress-label">0%</span></div>
+</div>
+<div id="quick-stats" class="panel" style="font-size:.82rem;margin-bottom:6px"></div>
+<div id="quick-verdict" class="result wait">Esperando selección...</div>
+<div id="quick-detail" style="max-height:240px;overflow-y:auto"></div>
+</div>
 </div>
 </div>
 <div class="card">
-<h2>Alfabetos y Lenguajes</h2>
-<div class="grid grid2">
-<div class="panel"><h3>Σ = {INS(m), APR(m), REP(m) | m ∈ P<sub>k</sub>}</h3><p class="sub">Alfabeto de eventos académicos. INS intenta inscribir, APR aprueba, REP reprueba. El autómata procesa cadenas sobre este alfabeto.</p></div>
-<div class="panel"><h3>L ⊆ Σ*</h3><p class="sub">Lenguaje de trayectorias válidas. w ∈ L si cada INS(m) ocurre solo tras APR de todos los prerrequisitos y la cadena termina en estado "Titulado". L3 ⊆ 𝒫(P<sub>k</sub>) son las cargas académicas válidas.</p></div>
+<h2>Desglose de Validación — V = p ∧ q ∧ r</h2>
+<div class="flex">
+<div class="col" id="validation-panel"><em>Selecciona materias para ver el análisis.</em></div>
+<div class="col">
+<h3>Materias Habilitadas</h3>
+<div id="hab-list" class="panel"></div>
 </div>
 </div>
-</section>
-
-<section id="tab-malla" class="tab">
-<div class="card">
-<h2>Grafo de Prerrequisitos — R1</h2>
-<p class="sub">Grafo dirigido donde (m₁ → m₂) ∈ R1 ⊆ P<sub>k</sub> × P<sub>k</sub> significa "m₁ debe aprobarse antes de m₂". Haz clic en un nodo para ver su impacto en la malla.</p>
-<div id="graph" class="viz"></div>
-</div>
-<div class="grid grid2">
-<div class="card"><h3>Detalle</h3><div id="graph-detail" class="panel"><em>Selecciona una materia.</em></div></div>
-<div class="card"><h3>Niveles</h3><div id="level-legend" class="panel"></div></div>
 </div>
 </section>
 
 <section id="tab-afd" class="tab">
 <div class="card">
-<h2>Autómata Finito Determinista</h2>
-<p class="sub">M = ⟨Q, Σ, δ, q₀, F⟩. Q = {q₀,q₁,q₂,qA,qR}. Σ = {V,F}. Las transiciones evalúan secuencialmente: prerrequisitos (p) → horario (q) → créditos (r). Cortocircuito lógico: si p = F, transita directo a qR.</p>
-<div id="dfa-viz" class="viz"></div>
+<h2>Autómata AFD — M = ⟨Q, Σ, δ, q₀, F⟩</h2>
+<p class="sub">Estados: q₀ (prerreq.) → q₁ (horario) → q₂ (créditos) → qA (acepta) / qR (rechaza). Cortocircuito si p=F. El estado se actualiza según tu selección actual.</p>
+<div class="flex">
+<div class="col"><div id="dfa-viz" class="viz"></div></div>
+<div class="col">
+<label>p — Prerrequisitos</label>
+<select id="dfa-p" onchange="runDfa()"><option>V</option><option>F</option></select>
+<label>q — Horario libre</label>
+<select id="dfa-q" onchange="runDfa()"><option>V</option><option>F</option></select>
+<label>r — Créditos ≤ Máximo</label>
+<select id="dfa-r" onchange="runDfa()"><option>V</option><option>F</option></select>
+<div id="dfa-result" class="result wait">Esperando...</div>
+<div id="dfa-path" class="panel" style="margin-top:6px"></div>
+<button class="btn btn-sm" onclick="document.getElementById('dfa-p').value='V';document.getElementById('dfa-q').value='V';document.getElementById('dfa-r').value='V';runDfa();">Reiniciar</button>
 </div>
-<div class="grid grid2">
+</div>
+</div>
 <div class="card">
-<h3>Entradas</h3>
-<label>p — ¿Cumple prerrequisitos?</label><select id="dfa-p"><option>V</option><option>F</option></select>
-<label>q — ¿Tiene horario libre?</label><select id="dfa-q"><option>V</option><option>F</option></select>
-<label>r — ¿Respeta máximo créditos?</label><select id="dfa-r"><option>V</option><option>F</option></select>
-<button id="dfa-run" class="btn">Ejecutar</button>
-<button id="dfa-reset" class="btn" style="background:linear-gradient(120deg,#556072,#6e7a8a)">Reiniciar</button>
-</div>
-<div class="card">
-<h3>Salida</h3>
-<div id="dfa-result" class="result wait">Esperando evaluación...</div>
-<div id="dfa-path" class="panel"></div>
-</div>
+<h3>Matriz de Transiciones (δ)</h3>
+<table><tr><th>Estado</th><th>Entrada V</th><th>Entrada F</th></tr>
+<tr><td>→ q₀</td><td>q₁</td><td>qR</td></tr>
+<tr><td>q₁</td><td>q₂</td><td>qR</td></tr>
+<tr><td>q₂</td><td>* qA</td><td>qR</td></tr>
+<tr><td>* qA</td><td>qA</td><td>qA</td></tr>
+<tr><td>qR</td><td>qR</td><td>qR</td></tr>
+</table>
 </div>
 </section>
 
 <section id="tab-conjuntos" class="tab">
-<div class="grid grid2">
-<div class="card">
-<h2>Configurar A y C</h2>
-<label>Aprobadas (A)</label><select id="set-a" multiple style="height:200px"></select>
-<label>Cursando (C)</label><select id="set-c" multiple style="height:200px"></select>
-<button id="set-update" class="btn">Actualizar</button>
+<div class="flex">
+<div class="col">
+<h2>A (Aprobadas) y C (Cursando)</h2>
+<p class="sub">Selecciona materias abajo. Los cambios se reflejan al instante en el diagrama y el validador.</p>
+<label>Aprobadas (A)</label><select id="set-a" multiple style="height:140px;width:100%"></select>
+<label>Cursando (C)</label><select id="set-c" multiple style="height:140px;width:100%"></select>
+<button class="btn btn-sm" onclick="syncSetsFromSelects();renderVenn();toast('Conjuntos actualizados')">Sincronizar</button>
 </div>
-<div class="card">
-<h2>Diagrama de Conjuntos</h2>
+<div class="col">
+<h2>Diagrama de Venn</h2>
 <div id="venn" class="viz"></div>
 </div>
 </div>
-<div class="grid grid2">
-<div class="card"><h3>Métricas</h3><div id="set-metrics"></div></div>
-<div class="card"><h3>Materias Habilitadas — hab(A)</h3><div id="set-hab" class="panel"></div></div>
+<div class="flex">
+<div class="col"><h3>Métricas</h3><div id="set-metrics"></div></div>
+<div class="col"><h3>hab(A)</h3><div id="set-hab" class="panel"></div></div>
 </div>
 </section>
 
-<section id="tab-validador" class="tab">
-<div class="grid grid2">
+<section id="tab-malla" class="tab">
 <div class="card">
-<h2>Estado Actual</h2>
-<label>Aprobadas (A)</label><select id="val-a" multiple style="height:200px"></select>
-<label>Carga máxima (créditos)</label><input type="number" id="val-max" value="30" min="1" max="60">
+<h2>Grafo de Prerrequisitos R1</h2>
+<p class="sub">(m₁ → m₂) ∈ R1: m₁ debe aprobarse antes de cursar m₂. Nodos coloreados por tu selección actual.</p>
+<div id="graph" class="viz"></div>
 </div>
-<div class="card">
-<h2>Propuesta de Inscripción (C)</h2>
-<label>Materias a inscribir</label><select id="val-c" multiple style="height:200px"></select>
-<button id="val-run" class="btn">Validar Inscripción</button>
-</div>
-</div>
-<div class="card">
-<h3>Resultado del Motor lógico</h3>
-<div id="val-result" class="result wait">Sin evaluar</div>
-<div id="val-detail" class="panel"></div>
+<div class="flex">
+<div class="col"><h3>Detalle</h3><div id="graph-detail" class="panel"><em>Haz clic en un nodo.</em></div></div>
+<div class="col"><h3>Leyenda</h3><div id="level-legend" class="panel"></div></div>
 </div>
 </section>
 
 <section id="tab-logica" class="tab">
-<div class="grid grid2">
-<div class="card">
+<div class="flex">
+<div class="col">
 <h2>Tabla de Verdad — V = p ∧ q ∧ r</h2>
 <div id="truth-table"></div>
 </div>
-<div class="card">
+<div class="col">
 <h2>Leyes Lógicas</h2>
 <div id="law-table"></div>
 </div>
 </div>
-<div class="grid grid2">
-<div class="card">
+<div class="flex">
+<div class="col">
 <h3>Evaluación Interactiva</h3>
 <label>p</label><select id="t-p"><option>V</option><option>F</option></select>
 <label>q</label><select id="t-q"><option>V</option><option>F</option></select>
 <label>r</label><select id="t-r"><option>V</option><option>F</option></select>
-<button id="t-run" class="btn">Evaluar</button>
+<button class="btn btn-sm" onclick="evalTruth()">Evaluar</button>
 </div>
-<div class="card">
-<h3>Resultado</h3>
+<div class="col">
 <div id="t-result" class="result wait">Pendiente</div>
 <div id="t-detail" class="panel"></div>
 </div>
@@ -202,7 +235,7 @@ th{background:#e4edf8;color:#192f4d}
 <div id="toast"></div>
 
 <script>
-// ---- MALLA CURRICULAR ITI ----
+// ── MALLA CURRICULAR ITI ──
 const MALLA = [
 {codigo:"DCCB-00142",asignatura:"Álgebra I",creditos:6,nivel:1,prereq:""},
 {codigo:"DCCB-00141",asignatura:"Cálculo I",creditos:6,nivel:1,prereq:""},
@@ -253,228 +286,280 @@ const MALLA = [
 {codigo:"ECIN-01000",asignatura:"Capstone Project",creditos:30,nivel:8,prereq:""}
 ];
 
-// ---- HELPERS ----
-const MAP_NOM = Object.fromEntries(MALLA.map(m=>[m.codigo,m.asignatura]));
-const MAP_CRED = Object.fromEntries(MALLA.map(m=>[m.codigo,m.creditos]));
-const MAP_NIV = Object.fromEntries(MALLA.map(m=>[m.codigo,m.nivel]));
+// ── HELPERS ──
+const NOM=Object.fromEntries(MALLA.map(m=>[m.codigo,m.asignatura]));
+const CRED=Object.fromEntries(MALLA.map(m=>[m.codigo,m.creditos]));
+const NIV=Object.fromEntries(MALLA.map(m=>[m.codigo,m.nivel]));
 function req(c){const m=MALLA.find(x=>x.codigo===c);return m?m.prereq.split(",").filter(Boolean):[];}
 const totalCred=MALLA.reduce((a,m)=>a+m.creditos,0);
 const totalRel=MALLA.reduce((a,m)=>a+(m.prereq?m.prereq.split(",").filter(Boolean).length:0),0);
 
-// FUNCIONES DEL MODELO
-function obtenerPrerrequisitos(m){return req(m);}
-function calcularPorcentajeAvance(A){return A.length/MALLA.length*100;}
-function proyectarHabilitadas(A){return MALLA.filter(m=>!A.includes(m.codigo)&&m.prereq.split(",").filter(Boolean).every(p=>A.includes(p))).map(m=>m.codigo);}
-function validarInscripcion(A,C,max){
-  const H=proyectarHabilitadas(A);
-  const prereqOK=C.every(c=>H.includes(c));
-  const sum=C.reduce((a,c)=>a+(MAP_CRED[c]||0),0);
-  return{ok:prereqOK&&sum<=max,prereqOK,sum,max,H,excede:sum>max,faltan:C.filter(c=>!H.includes(c))};
+// ── GLOBAL STATE (A y C compartidos) ──
+let A=[]; let C=[];
+function habilitadas(){return MALLA.filter(m=>!A.includes(m.codigo)&&req(m.codigo).every(p=>A.includes(p))).map(m=>m.codigo);}
+function validar(){
+  const H=habilitadas();
+  const max=parseInt(document.getElementById("val-max")?.value||30,10);
+  const prereqOK=C.length?C.every(c=>H.includes(c)):true;
+  const sum=C.reduce((a,c)=>a+(CRED[c]||0),0);
+  return{ok:C.length>0&&prereqOK&&sum<=max,prereqOK,sum,max:max,H,excede:sum>max,faltan:C.filter(c=>!H.includes(c)),total:C.length};
+}
+function pct(){return A.length/MALLA.length*100;}
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.className="show";setTimeout(()=>t.className="",1800);}
+function syncCardSelects(){
+  document.querySelectorAll("#set-a option,#val-a-copy option").forEach(o=>o.selected=A.includes(o.value));
+  document.querySelectorAll("#set-c option,#val-c-copy option").forEach(o=>o.selected=C.includes(o.value));
 }
 
-function toast(m){const t=document.getElementById("toast");t.textContent=m;t.className="show";setTimeout(()=>t.className="",2000);}
-
-// TABS
+// ── TABS ──
 document.querySelectorAll("#tabs button").forEach(b=>{
   b.addEventListener("click",()=>{
     document.querySelectorAll("#tabs button").forEach(x=>x.classList.remove("active"));
     document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-    b.classList.add("active");
-    document.getElementById(b.dataset.tab).classList.add("active");
-    setTimeout(()=>{renderGraph();renderDfa();renderVenn();},60);
+    b.classList.add("active");document.getElementById(b.dataset.tab).classList.add("active");
+    setTimeout(()=>{renderGraph();renderDfa();renderVenn();},80);
   });
 });
 
-// KPI
+// ── KPI ──
 function renderStats(){
   const lvls=new Set(MALLA.map(m=>m.nivel));
   document.getElementById("kpi-stats").innerHTML=
-    `<div class="stat"><div class="n">${MALLA.length}</div><div class="l">Materias P<sub>k</sub></div></div>`+
+    `<div class="stat"><div class="n">${MALLA.length}</div><div class="l">Materias Pk</div></div>`+
     `<div class="stat"><div class="n">${totalRel}</div><div class="l">Relaciones R1</div></div>`+
     `<div class="stat"><div class="n">${lvls.size}</div><div class="l">Niveles</div></div>`+
     `<div class="stat"><div class="n">${totalCred}</div><div class="l">Créditos totales</div></div>`;
 }
 
-// ---- GRAPH ----
-let gInit=false;
+// ── COURSE BOARD (Explorer tab) ──
+function renderCourseBoard(){
+  const el=document.getElementById("course-board");el.innerHTML="";
+  for(const m of MALLA){
+    const card=document.createElement("div");
+    card.className="course-card";
+    const inA=A.includes(m.codigo),inC=C.includes(m.codigo);
+    if(inA&&inC)card.classList.add("state-both");
+    else if(inA)card.classList.add("state-a");
+    else if(inC)card.classList.add("state-c");
+    else card.classList.add("state-none");
+    card.innerHTML=`<div class="code">${m.codigo}</div><div class="name">${m.asignatura}</div><div class="cred">${m.creditos} cr. · N${m.nivel}</div>`;
+    if(inA&&inC)card.innerHTML+=`<span class="badge badge-both">A+C</span>`;
+    else if(inA)card.innerHTML+=`<span class="badge badge-a">A</span>`;
+    else if(inC)card.innerHTML+=`<span class="badge badge-c">C</span>`;
+    card.onclick=()=>{
+      if(!inA&&!inC){A.push(m.codigo);}
+      else if(inA&&!inC){C.push(m.codigo);}
+      else if(inA&&inC){A=A.filter(x=>x!==m.codigo);C=C.filter(x=>x!==m.codigo);}
+      renderCourseBoard();syncCardSelects();updateQuickPanel();renderVenn();renderGraph();
+      if(document.getElementById("tab-afd").classList.contains("active"))runDfa();
+    };
+    el.appendChild(card);
+  }
+}
+
+// ── QUICK PANEL (real-time) ──
+function updateQuickPanel(){
+  const H=habilitadas();
+  const pc=pct();
+  document.getElementById("quick-progress-fill").style.width=pc+"%";
+  document.getElementById("quick-progress-label").textContent=pc.toFixed(1)+"%";
+  document.getElementById("quick-stats").innerHTML=
+    `<strong>|A|</strong> ${A.length} · <strong>|C|</strong> ${C.length} · <strong>|hab(A)|</strong> ${H.length} · `+
+    `<strong>∑cred(C)</strong> ${C.reduce((a,c)=>a+(CRED[c]||0),0)} · <strong>|Pk|</strong> ${MALLA.length}`;
+  const v=validar();
+  const verdict=document.getElementById("quick-verdict");
+  if(!C.length){verdict.className="result wait";verdict.textContent="Esperando selección...";document.getElementById("quick-detail").innerHTML="";updateValidationPanel(H,v);return;}
+  if(v.ok){verdict.className="result ok";verdict.textContent="✓ ACEPTADO — C ⊆ hab(A) ∧ ∑cred ≤ Máximo ⇒ C ∈ L3";}
+  else{verdict.className="result bad";verdict.textContent="✗ RECHAZADO — C ∉ L3 (no cumple prerequisitos o excede créditos)";}
+  let html="";
+  for(const c of C){
+    const pre=req(c);const ok=pre.length===0||pre.every(p=>A.includes(p));
+    html+=`<div class="vitem ${ok?"ok":"fail"}"><span>${NOM[c]}</span><span>${ok?"✓ req OK":"✗ falta: "+pre.filter(p=>!A.includes(p)).map(x=>NOM[x]).join(", ")}</span></div>`;
+  }
+  if(v.excede)html+=`<div class="vitem fail"><span>Créditos</span><span>✗ ${v.sum} > ${v.max}</span></div>`;
+  else html+=`<div class="vitem ok"><span>Créditos</span><span>✓ ${v.sum} ≤ ${v.max}</span></div>`;
+  html+=`<div style="font-size:.78rem;color:var(--muted);margin-top:4px">p = ${v.prereqOK?"V":"F"} · q = V · r = ${v.excede?"F":"V"} · V = ${v.ok?"V":"F"}</div>`;
+  document.getElementById("quick-detail").innerHTML=html;
+  updateValidationPanel(H,v);
+}
+function updateValidationPanel(H,v){
+  document.getElementById("validation-panel").innerHTML=
+    `<div class="vitem ${v.prereqOK?"ok":"fail"}"><span>∀m∈C: req(m)⊆A</span><span>${v.prereqOK?"✓ p = V":"✗ p = F"}</span></div>`+
+    `<div class="vitem ok"><span>Horario libre (q)</span><span>✓ q = V (asumido)</span></div>`+
+    `<div class="vitem ${v.excede?"fail":"ok"}"><span>∑cred(C) ≤ Máx (${v.max})</span><span>${v.excede?"✗ r = F":"✓ r = V"}</span></div>`+
+    `<div class="vitem" style="font-weight:700;background:#f0f0f0"><span>V = p ∧ q ∧ r</span><span>${v.ok?"V = V ✓":"V = F ✗"}</span></div>`+
+    `<div style="font-size:.78rem;color:var(--muted);margin-top:4px">ℒ(C) = C ${v.ok?"∈":"∉"} L3 (lenguaje de cargas válidas)</div>`;
+  document.getElementById("hab-list").innerHTML=H.length
+    ?H.map(c=>`<span class="pill">${NOM[c]} (${CRED[c]})</span>`).join(" ")
+    :"<em>(vacío)</em>";
+}
+
+// ── SELECT-BASED SETS (Conjuntos tab) ──
+function fillSelects(){
+  for(const id of["set-a","set-c"]){
+    const s=document.getElementById(id);s.innerHTML="";
+    MALLA.forEach(m=>{const o=document.createElement("option");o.value=m.codigo;o.textContent=`${m.codigo} — ${m.asignatura} (${m.creditos} cr.)`;s.appendChild(o);});
+  }
+}
+function syncSetsFromSelects(){
+  A=[...document.getElementById("set-a").selectedOptions].map(o=>o.value);
+  C=[...document.getElementById("set-c").selectedOptions].map(o=>o.value);
+  renderCourseBoard();updateQuickPanel();
+}
+
+// ── VENN ──
+function renderVenn(){
+  const host=document.getElementById("venn");
+  if(!host||host.offsetWidth===0)return;host.innerHTML="";
+  const w=host.clientWidth,h=300;
+  const svg=d3.select(host).append("svg").attr("width",w).attr("height",h);
+  const cx=w/2,cy=h/2;
+  svg.append("circle").attr("cx",cx-70).attr("cy",cy).attr("r",90).attr("class","venn-a");
+  svg.append("circle").attr("cx",cx+70).attr("cy",cy).attr("r",90).attr("class","venn-c");
+  svg.append("text").attr("x",cx-150).attr("y",cy-100).attr("font-weight",700).style("font-size","13px").text("A (Aprobadas)");
+  svg.append("text").attr("x",cx+150).attr("y",cy-100).attr("font-weight",700).style("font-size","13px").text("C (Cursando)");
+  const inter=A.filter(x=>C.includes(x)),aOnly=A.filter(x=>!C.includes(x)),cOnly=C.filter(x=>!A.includes(x));
+  svg.append("text").attr("x",cx-120).attr("y",cy).attr("text-anchor","middle").style("font-size","12px").text(`Solo A: ${aOnly.length}`);
+  svg.append("text").attr("x",cx+120).attr("y",cy).attr("text-anchor","middle").style("font-size","12px").text(`Solo C: ${cOnly.length}`);
+  svg.append("text").attr("x",cx).attr("y",cy).attr("text-anchor","middle").attr("font-weight",700).style("font-size","13px").text(`A∩C: ${inter.length}`);
+  svg.append("text").attr("x",cx).attr("y",h-10).attr("text-anchor","middle").style("font-size","11px").attr("fill",inter.length?"#b31f14":"#167e56")
+    .text(inter.length?"A ∩ C ≠ ∅ — viola restricción":"A ∩ C = ∅ — restricción respetada");
+  const H=habilitadas();
+  document.getElementById("set-hab").innerHTML=H.length?H.map(c=>`<span class="pill">${NOM[c]} (${CRED[c]})</span>`).join(""):"(sin habilitadas)";
+  document.getElementById("set-metrics").innerHTML=
+    "<table><tr><th>Indicador</th><th>Valor</th></tr>"+
+    `<tr><td>|A|</td><td>${A.length}</td></tr><tr><td>|C|</td><td>${C.length}</td></tr>`+
+    `<tr><td>|A∩C|</td><td style="color:${inter.length?"#b31f14":"#167e56"}">${inter.length}</td></tr>`+
+    `<tr><td>|Pk|</td><td>${MALLA.length}</td></tr><tr><td>|hab(A)|</td><td>${H.length}</td></tr>`+
+    `<tr><td>pct(A)</td><td>${pct().toFixed(1)}%</td></tr></table>`;
+}
+
+// ── GRAPH ──
 function renderGraph(){
   const host=document.getElementById("graph");
-  if(!host||host.offsetWidth===0)return;
-  host.innerHTML="";const w=host.clientWidth,h=450;
+  if(!host||host.offsetWidth===0)return;host.innerHTML="";
+  const w=host.clientWidth,h=400;
   const svg=d3.select(host).append("svg").attr("width",w).attr("height",h);
-  svg.append("defs").append("marker")
-    .attr("id","ag").attr("viewBox","0 0 10 10").attr("refX",18).attr("refY",5)
-    .attr("markerWidth",8).attr("markerHeight",8).attr("orient","auto")
+  svg.append("defs").append("marker").attr("id","ag").attr("viewBox","0 0 10 10").attr("refX",18).attr("refY",5)
+    .attr("markerWidth",7).attr("markerHeight",7).attr("orient","auto")
     .append("path").attr("d","M0,0 L10,5 L0,10 Z").attr("fill","#6b7585");
-  const nds=MALLA.map(m=>({id:m.codigo,nom:m.asignatura,area:"",niv:m.nivel,cred:m.creditos}));
-  const lks=[];
-  MALLA.forEach(m=>{const p=m.prereq.split(",").filter(Boolean);p.forEach(r=>lks.push({source:r,target:m.codigo}));});
+  const nds=MALLA.map(m=>({id:m.codigo,nom:m.asignatura,niv:m.nivel,cred:m.creditos}));
+  const lks=[];MALLA.forEach(m=>{const p=m.prereq.split(",").filter(Boolean);p.forEach(r=>lks.push({source:r,target:m.codigo}));});
   const pal={1:"#dbeafe",2:"#ddf3e0",3:"#fef3cd",4:"#fce4ec",5:"#e8dff5",6:"#fff0d9",7:"#d6f0fa",8:"#f0e6ff"};
   const sim=d3.forceSimulation(nds)
-    .force("link",d3.forceLink(lks).id(d=>d.id).distance(130))
-    .force("charge",d3.forceManyBody().strength(-320))
+    .force("link",d3.forceLink(lks).id(d=>d.id).distance(120))
+    .force("charge",d3.forceManyBody().strength(-300))
     .force("center",d3.forceCenter(w/2,h/2))
-    .force("collision",d3.forceCollide(32));
-  svg.append("g").selectAll("line").data(lks).join("line")
-    .attr("stroke","#868f9f").attr("stroke-width",1.5).attr("marker-end","url(#ag)");
+    .force("collision",d3.forceCollide(30));
+  svg.append("g").selectAll("line").data(lks).join("line").attr("class","arr").attr("marker-end","url(#ag)");
   const grp=svg.append("g").selectAll("g").data(nds).join("g")
     .call(d3.drag().on("start",(e,d)=>{if(!e.active)sim.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y;})
-      .on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y;})
-      .on("end",(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;}));
-  grp.append("circle").attr("r",22).attr("fill",d=>pal[d.niv]||"#e2e8f0").attr("stroke","#192f4d").attr("stroke-width",2)
+      .on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y;}).on("end",(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;}));
+  grp.append("circle").attr("r",20)
+    .attr("fill",d=>{
+      if(A.includes(d.id)&&C.includes(d.id))return "#e8dff5";
+      if(A.includes(d.id))return "#dbeafe";
+      if(C.includes(d.id))return "#fef3cd";
+      return pal[d.niv]||"#e2e8f0";
+    })
+    .attr("stroke",d=>{
+      if(A.includes(d.id)&&C.includes(d.id))return "#7c3aed";
+      if(A.includes(d.id))return "#2563eb";
+      if(C.includes(d.id))return "#d97706";
+      return "#192f4d";
+    }).attr("stroke-width",2)
     .on("click",(_,d)=>{
-      const pre=obtenerPrerrequisitos(d.id).map(x=>MAP_NOM[x]||x).join(", ")||"(ninguno)";
-      const des=MALLA.filter(m=>m.prereq.split(",").filter(Boolean).includes(d.id));
-      const txt=`<strong>${d.id} — ${d.nom}</strong><br>Créditos: ${d.cred} | Nivel: ${d.niv}<br><strong>Prerrequisitos:</strong> ${pre}<br><strong>Habilita:</strong> ${des.length?des.map(x=>x.asignatura).join(", "):"(ninguna)"}`;
-      document.getElementById("graph-detail").innerHTML=txt;
+      const pre=req(d.id).map(x=>NOM[x]||x).join(", ")||"(ninguno)";
+      const des=MALLA.filter(m=>req(m.codigo).includes(d.id));
+      document.getElementById("graph-detail").innerHTML=
+        `<strong>${d.id} — ${d.nom}</strong><br>Créditos: ${d.cred} | Nivel: ${d.niv}<br>`+
+        `<strong>Prerreq:</strong> ${pre}<br><strong>Habilita:</strong> ${des.length?des.map(x=>x.asignatura).join(", "):"(ninguna)"}`+
+        `<br><strong>Estado:</strong> ${A.includes(d.id)?"Aprobada / ":""}${C.includes(d.id)?"Cursando":A.includes(d.id)?"":"—"}`;
     });
-  grp.append("text").attr("text-anchor","middle").attr("font-size",10).attr("dy",3.5).text(d=>d.id);
+  grp.append("text").attr("text-anchor","middle").attr("font-size",9).attr("dy",3).text(d=>d.id);
   sim.on("tick",()=>{
     svg.select("g").selectAll("line").attr("x1",d=>d.source.x).attr("y1",d=>d.source.y).attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
     grp.attr("transform",d=>`translate(${d.x},${d.y})`);
   });
-  const leg=document.getElementById("level-legend");
-  leg.innerHTML=Object.entries(pal).map(([k,v])=>`<span class="pill" style="background:${v};border:1px solid #bcc8df">Nivel ${k}</span>`).join("");
-  gInit=true;
+  document.getElementById("level-legend").innerHTML=
+    `<span class="pill" style="background:#dbeafe;border:1px solid #93b5e8">Aprobada</span>`+
+    `<span class="pill" style="background:#fef3cd;border:1px solid #e0b354">Cursando</span>`+
+    `<span class="pill" style="background:#e8dff5;border:1px solid #a78cd4">A+C</span>`+
+    Object.entries(pal).map(([k,v])=>`<span class="pill" style="background:${v};border:1px solid #bcc8df">N${k}</span>`).join("");
 }
 
-// ---- DFA ----
-let dfaSt="q0";
+// ── DFA ──
 function renderDfa(){
   const host=document.getElementById("dfa-viz");
   if(!host||host.offsetWidth===0)return;host.innerHTML="";
-  const w=host.clientWidth,h=320;
+  const w=host.clientWidth,h=280;
   const svg=d3.select(host).append("svg").attr("width",w).attr("height",h);
-  svg.append("defs").append("marker")
-    .attr("id","ad").attr("viewBox","0 0 10 10").attr("refX",11).attr("refY",5)
-    .attr("markerWidth",7).attr("markerHeight",7).attr("orient","auto")
+  svg.append("defs").append("marker").attr("id","ad").attr("viewBox","0 0 10 10").attr("refX",11).attr("refY",5)
+    .attr("markerWidth",6).attr("markerHeight",6).attr("orient","auto")
     .append("path").attr("d","M0,0 L10,5 L0,10 Z").attr("fill","#5f6979");
-  const S={q0:{x:w*.12,y:h/2,d:"Inicio"},
-    q1:{x:w*.34,y:h*.25,d:"Horario"},
-    q2:{x:w*.34,y:h*.75,d:"Créditos"},
-    qA:{x:w*.66,y:h*.25,d:"Acepta",ok:true},
-    qR:{x:w*.66,y:h*.75,d:"Rechaza",bad:true}};
+  const S={q0:{x:w*.12,y:h/2,d:"Inicio"},q1:{x:w*.34,y:h*.25,d:"Horario"},q2:{x:w*.34,y:h*.75,d:"Créditos"},qA:{x:w*.68,y:h*.25,d:"Acepta",ok:true},qR:{x:w*.68,y:h*.75,d:"Rechaza",bad:true}};
+  const st=document.getElementById("dfa-st")?.value||"q0";
   [["q0","q1","V"],["q0","qR","F"],["q1","q2","V"],["q1","qR","F"],["q2","qA","V"],["q2","qR","F"]].forEach(([a,b,l])=>{
-    svg.append("line").attr("class","arr")
-      .attr("x1",S[a].x+30).attr("y1",S[a].y).attr("x2",S[b].x-30).attr("y2",S[b].y);
-    svg.append("text").attr("x",(S[a].x+S[b].x)/2).attr("y",(S[a].y+S[b].y)/2-8)
-      .attr("font-size",12).attr("fill","#6a7383").attr("text-anchor","middle").text(l);
+    svg.append("line").attr("class","arr").attr("x1",S[a].x+28).attr("y1",S[a].y).attr("x2",S[b].x-28).attr("y2",S[b].y);
+    svg.append("text").attr("x",(S[a].x+S[b].x)/2).attr("y",(S[a].y+S[b].y)/2-8).attr("font-size",11).attr("fill","#6a7383").attr("text-anchor","middle").text(l);
   });
   Object.entries(S).forEach(([k,v])=>{
-    let c="nstate";if(v.ok)c+=" nstate-ok";if(v.bad)c+=" nstate-bad";if(dfaSt===k)c+=" nstate-current";
-    svg.append("circle").attr("class",c).attr("cx",v.x).attr("cy",v.y).attr("r",32);
-    svg.append("text").attr("x",v.x).attr("y",v.y-6).attr("text-anchor","middle").attr("font-weight",700).text(k);
-    svg.append("text").attr("x",v.x).attr("y",v.y+12).attr("text-anchor","middle").attr("font-size",10).text(v.d);
+    let c="nstate";if(v.ok)c+=" nstate-ok";if(v.bad)c+=" nstate-bad";if(st===k)c+=" nstate-cur";
+    svg.append("circle").attr("class",c).attr("cx",v.x).attr("cy",v.y).attr("r",30);
+    svg.append("text").attr("x",v.x).attr("y",v.y-5).attr("text-anchor","middle").attr("font-weight",700).style("font-size","13px").text(k);
+    svg.append("text").attr("x",v.x).attr("y",v.y+13).attr("text-anchor","middle").style("font-size","10px").attr("fill","#555").text(v.d);
   });
 }
-document.getElementById("dfa-run").addEventListener("click",()=>{
+
+function runDfa(){
   const p=document.getElementById("dfa-p").value,q=document.getElementById("dfa-q").value,r=document.getElementById("dfa-r").value;
-  let st="q0",path=["q0"];
+  let st="q0",path=["q₀"];
   if(p==="F"){st="qR";path.push("qR");}
-  else if(q==="F"){st="qR";path.push("q1","qR");}
-  else if(r==="F"){st="qR";path.push("q1","q2","qR");}
-  else{st="qA";path.push("q1","q2","qA");}
-  dfaSt=st;renderDfa();
+  else if(q==="F"){st="qR";path.push("q₁","qR");}
+  else if(r==="F"){st="qR";path.push("q₁","q₂","qR");}
+  else{st="qA";path.push("q₁","q₂","qA");}
+  document.getElementById("dfa-st")?.remove();
+  const inp=document.createElement("input");inp.type="hidden";inp.id="dfa-st";inp.value=st;
+  document.getElementById("dfa-viz").parentElement.appendChild(inp);
+  renderDfa();
   const res=document.getElementById("dfa-result");
-  if(st==="qA"){res.className="result ok";res.textContent="ACEPTADO — p ∧ q ∧ r = V. La inscripción pertenece a L3.";}
-  else{res.className="result bad";res.textContent="RECHAZADO — ¬p ∨ ¬q ∨ ¬r = V. No pertenece a L3.";}
-  document.getElementById("dfa-path").innerHTML=`<strong>δ:</strong> ${path.join(" → ")}`;
-});
-document.getElementById("dfa-reset").addEventListener("click",()=>{
-  dfaSt="q0";renderDfa();
-  document.getElementById("dfa-result").className="result wait";document.getElementById("dfa-result").textContent="Esperando evaluación...";
-  document.getElementById("dfa-path").textContent="";
-});
-
-// ---- SETS ----
-function fillSel(id){
-  const s=document.getElementById(id);s.innerHTML="";
-  MALLA.forEach(m=>{const o=document.createElement("option");o.value=m.codigo;o.textContent=`${m.codigo} — ${m.asignatura} (${m.creditos} cr.)`;s.appendChild(o);});
+  if(st==="qA"){res.className="result ok";res.textContent="✓ ACEPTADO — p ∧ q ∧ r = V ⇒ qA";}
+  else{res.className="result bad";res.textContent="✗ RECHAZADO — ¬p ∨ ¬q ∨ ¬r = V ⇒ qR";}
+  document.getElementById("dfa-path").innerHTML=`<strong>δ:</strong> ${path.join(" → ")}<br><strong>L3:</strong> ${st==="qA"?"C ∈ L3 ✓":"C ∉ L3 ✗"}`;
 }
-["set-a","set-c","val-a","val-c"].forEach(fillSel);
-function sv(id){return[...document.getElementById(id).selectedOptions].map(o=>o.value);}
 
-function renderVenn(){
-  const host=document.getElementById("venn");
-  if(!host||host.offsetWidth===0)return;
-  const A=sv("set-a"),C=sv("set-c");host.innerHTML="";
-  const w=host.clientWidth,h=360;
-  const svg=d3.select(host).append("svg").attr("width",w).attr("height",h);
-  const cx=w/2,cy=h/2;
-  svg.append("circle").attr("cx",cx-80).attr("cy",cy).attr("r",100).attr("class","venn-a");
-  svg.append("circle").attr("cx",cx+80).attr("cy",cy).attr("r",100).attr("class","venn-c");
-  svg.append("text").attr("x",cx-160).attr("y",cy-112).attr("font-weight",700).text("A (Aprobadas)");
-  svg.append("text").attr("x",cx+160).attr("y",cy-112).attr("font-weight",700).text("C (Cursando)");
-  const inter=A.filter(x=>C.includes(x)),aOnly=A.filter(x=>!C.includes(x)),cOnly=C.filter(x=>!A.includes(x));
-  svg.append("text").attr("x",cx-130).attr("y",cy).attr("text-anchor","middle").text(`Solo A: ${aOnly.length}`);
-  svg.append("text").attr("x",cx+130).attr("y",cy).attr("text-anchor","middle").text(`Solo C: ${cOnly.length}`);
-  svg.append("text").attr("x",cx).attr("y",cy).attr("text-anchor","middle").attr("font-weight",700).text(`A ∩ C: ${inter.length}`);
-  const H=proyectarHabilitadas(A);
-  document.getElementById("set-hab").innerHTML=H.length?H.map(c=>`<span class="pill">${MAP_NOM[c]} (${MAP_CRED[c]} cr.)</span>`).join(""):"(sin habilitadas)";
-  document.getElementById("set-metrics").innerHTML=
-    "<table><tr><th>Indicador</th><th>Valor</th></tr>"+
-    `<tr><td>|A|</td><td>${A.length}</td></tr><tr><td>|C|</td><td>${C.length}</td></tr>`+
-    `<tr><td>|A ∩ C|</td><td style="color:${inter.length?"#b31f14":"#167e56"}">${inter.length} ${inter.length?"(viola restricción)":"(correcto)"}</td></tr>`+
-    `<tr><td>|P<sub>k</sub>|</td><td>${MALLA.length}</td></tr><tr><td>|hab(A)|</td><td>${H.length}</td></tr>`+
-    `<tr><td>pct(A)</td><td>${calcularPorcentajeAvance(A).toFixed(1)}%</td></tr></table>`;
-}
-document.getElementById("set-update").addEventListener("click",()=>{renderVenn();toast("Conjuntos actualizados");});
-
-// ---- VALIDATOR ----
-document.getElementById("val-run").addEventListener("click",()=>{
-  const A=sv("val-a"),C=sv("val-c"),max=parseInt(document.getElementById("val-max").value,10)||30;
-  if(!C.length)return toast("Selecciona al menos una materia");
-  const r=validarInscripcion(A,C,max);
-  const box=document.getElementById("val-result");
-  if(r.ok){box.className="result ok";box.textContent="✓ INSCRIPCIÓN ACEPTADA — C ⊆ hab(A) ∧ Σcred ≤ Máximo => C ∈ L3";}
-  else{box.className="result bad";box.textContent="✗ INSCRIPCIÓN RECHAZADA — C ∉ L3";}
-  const d=[`<strong>Créditos:</strong> ${r.sum} / ${r.max} ${r.excede?"(EXCEDE)":""}`,
-    `<strong>Prerrequisitos:</strong> ${r.prereqOK?"OK":"FALLA"}`];
-  if(r.faltan.length)d.push(`<strong>Materias sin requisitos:</strong> ${r.faltan.map(x=>MAP_NOM[x]).join(", ")}`);
-  d.push(`<strong>hab(A):</strong> ${r.H.length?r.H.map(x=>MAP_NOM[x]).join(", "):"(vacío)"}`);
-  d.push(`<strong>ℒ(C):</strong> C ${r.ok?"∈":"∉"} L3 — La validación es análoga a evaluar ∀m∈C: req(m)⊆A`);
-  document.getElementById("val-detail").innerHTML=d.join("<br>");
-});
-
-// ---- TRUTH ----
-function renderTruth(){
+// ── TRUTH ──
+function renderTruthStatic(){
   const v=["V","F"];let r="";
   for(const p of v)for(const q of v)for(const r2 of v){
     const pq=(p==="V"&&q==="V")?"V":"F",V=(pq==="V"&&r2==="V")?"V":"F";
     r+=`<tr style="background:${V==="V"?"#e6f6ef":"#fff"}"><td>${p}</td><td>${q}</td><td>${r2}</td><td>${pq}</td><td><strong>${V}</strong></td></tr>`;
   }
-  document.getElementById("truth-table").innerHTML=`<table><tr><th>p</th><th>q</th><th>r</th><th>p∧q</th><th>V=p∧q∧r</th></tr>${r}</table>`;
+  document.getElementById("truth-table").innerHTML=`<table><tr><th>p</th><th>q</th><th>r</th><th>p∧q</th><th>V</th></tr>${r}</table>`;
   document.getElementById("law-table").innerHTML=
     `<table><tr><th>Ley</th><th>Fórmula</th><th>Aplicación</th></tr>
-    <tr><td>No contradicción</td><td>¬(p ∧ ¬p)</td><td>Una misma condición no puede ser V y F simultáneamente.</td></tr>
-    <tr><td>Tercero excluido</td><td>p ∨ ¬p</td><td>Toda proposición es V o F, sin valor intermedio.</td></tr>
-    <tr><td>Conmutativa</td><td>p ∧ q ≡ q ∧ p</td><td>El orden de evaluación no altera V.</td></tr>
-    <tr><td>Asociativa</td><td>(p∧q)∧r ≡ p∧(q∧r)</td><td>La agrupación no cambia el resultado.</td></tr>
-    <tr><td>De Morgan</td><td>¬(p∧q∧r) ≡ ¬p ∨ ¬q ∨ ¬r</td><td>El rechazo ocurre si falla AL MENOS UNA condición.</td></tr>
-    <tr><td>Implicación</td><td>req(m)⊆A → m∈hab(A)</td><td>Cumplir prerrequisitos habilita la materia.</td></tr></table>`;
+    <tr><td>No contradicción</td><td>¬(p ∧ ¬p)</td><td>Una condición no puede ser V y F a la vez.</td></tr>
+    <tr><td>Tercero excluido</td><td>p ∨ ¬p</td><td>Siempre V o F, sin estado intermedio.</td></tr>
+    <tr><td>Conmutativa</td><td>p∧q ≡ q∧p</td><td>El orden no altera V.</td></tr>
+    <tr><td>Asociativa</td><td>(p∧q)∧r ≡ p∧(q∧r)</td><td>Agrupar no cambia V.</td></tr>
+    <tr><td>De Morgan</td><td>¬(p∧q∧r) ≡ ¬p ∨ ¬q ∨ ¬r</td><td>Rechazo si falla AL MENOS UNA.</td></tr>
+    <tr><td>Implicación</td><td>req(m)⊆A → m∈hab(A)</td><td>Si cumple prereq., la materia se habilita.</td></tr></table>`;
 }
-renderTruth();
-document.getElementById("t-run").addEventListener("click",()=>{
+function evalTruth(){
   const p=document.getElementById("t-p").value,q=document.getElementById("t-q").value,r=document.getElementById("t-r").value;
   const V=(p==="V"&&q==="V"&&r==="V")?"V":"F";
   const box=document.getElementById("t-result");
-  if(V==="V"){box.className="result ok";box.textContent="V = V — Inscripción aceptada (p∧q∧r = V)";document.getElementById("t-detail").innerHTML="Se cumplen simultáneamente p, q y r. La inscripción pertenece a L3.";}
+  if(V==="V"){box.className="result ok";box.textContent="V = V — Inscripción aceptada";document.getElementById("t-detail").innerHTML="p, q y r verdaderas simultáneamente. C ∈ L3.";}
   else{box.className="result bad";box.textContent="V = F — Inscripción rechazada";const f=[];if(p==="F")f.push("¬p");if(q==="F")f.push("¬q");if(r==="F")f.push("¬r");document.getElementById("t-detail").innerHTML=`De Morgan: ¬(p∧q∧r) ≡ ${f.join(" ∨ ")} = V`;}
-});
+}
 
-// SYNC
-document.getElementById("set-a").addEventListener("change",()=>{const v=sv("set-a");[...document.getElementById("val-a").options].forEach(o=>o.selected=v.includes(o.value));});
-document.getElementById("val-a").addEventListener("change",()=>{const v=sv("val-a");[...document.getElementById("set-a").options].forEach(o=>o.selected=v.includes(o.value));});
-
-// INIT
-renderStats();renderGraph();renderDfa();renderVenn();
+// ── INIT ──
+renderStats();fillSelects();renderCourseBoard();renderVenn();renderGraph();renderDfa();renderTruthStatic();updateQuickPanel();
 window.addEventListener("resize",()=>{
   if(document.getElementById("tab-malla").classList.contains("active"))renderGraph();
   if(document.getElementById("tab-afd").classList.contains("active"))renderDfa();
   if(document.getElementById("tab-conjuntos").classList.contains("active"))renderVenn();
 });
-
-console.log("Validador Curricular ITI — Cargado con %d materias (%d relaciones)",MALLA.length,totalRel);
 </script>
 </body>
 </html>
