@@ -61,12 +61,10 @@ th{background:#e4edf8;color:#192f4d}
 .course-card.state-none{background:#f5f3ef}
 .course-card.state-a{background:#dbeafe;border-color:#2563eb}
 .course-card.state-c{background:#fef3cd;border-color:#d97706}
-.course-card.state-both{background:#e8dff5;border-color:#7c3aed}
 .course-card.state-none:hover{background:#edebe4}
 .badge{display:inline-block;border-radius:4px;padding:1px 6px;font-size:.68rem;font-weight:600;margin-left:4px}
 .badge-a{background:#2563eb;color:#fff}
 .badge-c{background:#d97706;color:#fff}
-.badge-both{background:#7c3aed;color:#fff}
 
 .progress-bar{height:20px;background:#e5e7eb;border-radius:999px;overflow:hidden;position:relative;margin:6px 0}
 .progress-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#2563eb,#167e56);transition:width .3s}
@@ -117,7 +115,7 @@ th{background:#e4edf8;color:#192f4d}
 <div class="col2">
 <h2>Panel del Estudiante</h2>
 <p class="sub">Haz clic en las materias para marcarlas como <strong>Aprobadas (A)</strong> o <strong>Cursando (C)</strong>. La validación se dispara en tiempo real.</p>
-<label>Click: 1° vez → A (aprobada) · 2° vez → A+C (aprobada y cursando) · 3° vez → quitar</label>
+<label>Click: 1° → A (aprobada) · 2° → cambia a C (cursando) · 3° → quitar. A ∩ C = ∅</label>
 <div id="course-board" class="course-grid"></div>
 </div>
 <div class="col">
@@ -338,18 +336,16 @@ function renderCourseBoard(){
     const card=document.createElement("div");
     card.className="course-card";
     const inA=A.includes(m.codigo),inC=C.includes(m.codigo);
-    if(inA&&inC)card.classList.add("state-both");
-    else if(inA)card.classList.add("state-a");
+    if(inA)card.classList.add("state-a");
     else if(inC)card.classList.add("state-c");
     else card.classList.add("state-none");
     card.innerHTML=`<div class="code">${m.codigo}</div><div class="name">${m.asignatura}</div><div class="cred">${m.creditos} cr. · N${m.nivel}</div>`;
-    if(inA&&inC)card.innerHTML+=`<span class="badge badge-both">A+C</span>`;
-    else if(inA)card.innerHTML+=`<span class="badge badge-a">A</span>`;
+    if(inA)card.innerHTML+=`<span class="badge badge-a">A</span>`;
     else if(inC)card.innerHTML+=`<span class="badge badge-c">C</span>`;
     card.onclick=()=>{
-      if(!inA&&!inC){A.push(m.codigo);}
-      else if(inA&&!inC){C.push(m.codigo);}
-      else if(inA&&inC){A=A.filter(x=>x!==m.codigo);C=C.filter(x=>x!==m.codigo);}
+      if(!inA&&!inC){A.push(m.codigo);}           // none → A
+      else if(inA&&!inC){A=A.filter(x=>x!==m.codigo);C.push(m.codigo);}  // A → C
+      else{A=A.filter(x=>x!==m.codigo);C=C.filter(x=>x!==m.codigo);}      // C → none
       renderCourseBoard();syncCardSelects();updateQuickPanel();renderVenn();renderGraph();
       if(document.getElementById("tab-afd").classList.contains("active"))runDfa();
     };
@@ -418,12 +414,12 @@ function renderVenn(){
   svg.append("circle").attr("cx",cx+70).attr("cy",cy).attr("r",90).attr("class","venn-c");
   svg.append("text").attr("x",cx-150).attr("y",cy-100).attr("font-weight",700).style("font-size","13px").text("A (Aprobadas)");
   svg.append("text").attr("x",cx+150).attr("y",cy-100).attr("font-weight",700).style("font-size","13px").text("C (Cursando)");
-  const inter=A.filter(x=>C.includes(x)),aOnly=A.filter(x=>!C.includes(x)),cOnly=C.filter(x=>!A.includes(x));
+  const aOnly=A.filter(x=>!C.includes(x)),cOnly=C.filter(x=>!A.includes(x));
   svg.append("text").attr("x",cx-120).attr("y",cy).attr("text-anchor","middle").style("font-size","12px").text(`Solo A: ${aOnly.length}`);
   svg.append("text").attr("x",cx+120).attr("y",cy).attr("text-anchor","middle").style("font-size","12px").text(`Solo C: ${cOnly.length}`);
-  svg.append("text").attr("x",cx).attr("y",cy).attr("text-anchor","middle").attr("font-weight",700).style("font-size","13px").text(`A∩C: ${inter.length}`);
-  svg.append("text").attr("x",cx).attr("y",h-10).attr("text-anchor","middle").style("font-size","11px").attr("fill",inter.length?"#b31f14":"#167e56")
-    .text(inter.length?"A ∩ C ≠ ∅ — viola restricción":"A ∩ C = ∅ — restricción respetada");
+  svg.append("text").attr("x",cx).attr("y",cy).attr("text-anchor","middle").attr("font-weight",700).style("font-size","13px").text("A∩C = ∅");
+  svg.append("text").attr("x",cx).attr("y",h-10).attr("text-anchor","middle").style("font-size","11px").attr("fill","#167e56")
+    .text("A ∩ C = ∅ — restricción respetada");
   const H=habilitadas();
   document.getElementById("set-hab").innerHTML=H.length?H.map(c=>`<span class="pill">${NOM[c]} (${CRED[c]})</span>`).join(""):"(sin habilitadas)";
   document.getElementById("set-metrics").innerHTML=
@@ -457,13 +453,11 @@ function renderGraph(){
       .on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y;}).on("end",(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;}));
   grp.append("circle").attr("r",20)
     .attr("fill",d=>{
-      if(A.includes(d.id)&&C.includes(d.id))return "#e8dff5";
       if(A.includes(d.id))return "#dbeafe";
       if(C.includes(d.id))return "#fef3cd";
       return pal[d.niv]||"#e2e8f0";
     })
     .attr("stroke",d=>{
-      if(A.includes(d.id)&&C.includes(d.id))return "#7c3aed";
       if(A.includes(d.id))return "#2563eb";
       if(C.includes(d.id))return "#d97706";
       return "#192f4d";
@@ -474,7 +468,7 @@ function renderGraph(){
       document.getElementById("graph-detail").innerHTML=
         `<strong>${d.id} — ${d.nom}</strong><br>Créditos: ${d.cred} | Nivel: ${d.niv}<br>`+
         `<strong>Prerreq:</strong> ${pre}<br><strong>Habilita:</strong> ${des.length?des.map(x=>x.asignatura).join(", "):"(ninguna)"}`+
-        `<br><strong>Estado:</strong> ${A.includes(d.id)?"Aprobada / ":""}${C.includes(d.id)?"Cursando":A.includes(d.id)?"":"—"}`;
+        `<br><strong>Estado:</strong> ${A.includes(d.id)?"Aprobada":C.includes(d.id)?"Cursando":"—"}`;
     });
   grp.append("text").attr("text-anchor","middle").attr("font-size",9).attr("dy",3).text(d=>d.id);
   sim.on("tick",()=>{
@@ -484,7 +478,6 @@ function renderGraph(){
   document.getElementById("level-legend").innerHTML=
     `<span class="pill" style="background:#dbeafe;border:1px solid #93b5e8">Aprobada</span>`+
     `<span class="pill" style="background:#fef3cd;border:1px solid #e0b354">Cursando</span>`+
-    `<span class="pill" style="background:#e8dff5;border:1px solid #a78cd4">A+C</span>`+
     Object.entries(pal).map(([k,v])=>`<span class="pill" style="background:${v};border:1px solid #bcc8df">N${k}</span>`).join("");
 }
 
